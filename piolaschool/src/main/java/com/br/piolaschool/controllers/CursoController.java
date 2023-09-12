@@ -3,6 +3,7 @@ package com.br.piolaschool.controllers;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.br.piolaschool.entidade.curso.Curso;
+import com.br.piolaschool.services.CursoService;
 
-import dao.ICurso;
+import repository.ICurso;
+
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -22,29 +25,28 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class CursoController {
     
     @Autowired
-    private ICurso dao;
+    private ICurso repository;
+
+    private CursoService cursoService;
     
     @GetMapping
-    public List<Curso> listaCurso(){
-        return (List<Curso>) dao.findAll();
+    public ResponseEntity<List<Curso>> listaCurso(){
+        return ResponseEntity.status(200).body(cursoService.listaCurso());
     }
 
     @PostMapping
-    public Curso criarCurso(@RequestBody Curso curso){
-        Curso novoCurso = dao.save(curso);
-        return novoCurso;
+    public ResponseEntity<Curso> criarCurso(@RequestBody Curso curso){
+        return ResponseEntity.status(201).body(cursoService.criarCurso(curso));
     }
 
     @PutMapping
-    public Curso editarCurso(@RequestBody Curso curso){
-        Curso novoCurso = dao.save(curso);
-        return novoCurso;
+    public ResponseEntity<Curso> editarCurso(@RequestBody Curso curso){
+        return ResponseEntity.status(200).body(cursoService.editarCurso(curso));
     }
 
     @DeleteMapping
-    public Optional<Curso> deletarCurso(@PathVariable Integer codigo){
-        Optional<Curso> curso = dao.findById(codigo);
-        dao.deleteById(codigo); 
-        return curso;
+    public ResponseEntity<?> deletarCurso(@PathVariable Integer codigo){
+        cursoService.deletarCurso(codigo); 
+        return ResponseEntity.status(204).build();
     }
 }

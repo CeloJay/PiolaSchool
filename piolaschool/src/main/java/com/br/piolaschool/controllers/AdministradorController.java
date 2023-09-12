@@ -3,6 +3,7 @@ package com.br.piolaschool.controllers;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,37 +14,41 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.br.piolaschool.entidade.administrador.Administrador;
+import com.br.piolaschool.services.AdministradorService;
 
-import dao.IAdministrador;
+import repository.IAdministrador;
 
 @RestController
 @RequestMapping("/administrador")
 public class AdministradorController {
     
     @Autowired
-    private IAdministrador dao;
+    private IAdministrador repository;
+
+    private AdministradorService administradorService;
+
+    public AdministradorController(AdministradorService administradorService){
+        this.administradorService = administradorService;
+    }
     
     @GetMapping
-    public List<Administrador> listaAdministrador() {
-        return(List<Administrador>) dao.findAll();
+    public ResponseEntity<List<Administrador>> listaAdministrador() {
+        return ResponseEntity.status(200).body(administradorService.listaAdministrador()); 
     }
 
     @PostMapping
-    public Administrador criarAdministrador(@RequestBody Administrador administrador){
-        Administrador novoAdministrador = dao.save(administrador);
-        return novoAdministrador;
+    public ResponseEntity<Administrador> criarAdministrador(@RequestBody Administrador administrador){
+        return ResponseEntity.status(201).body(administradorService.criarAdministrador(administrador));
     }
 
     @PutMapping
-    public Administrador editarAdministrador(@RequestBody Administrador administrador){
-        Administrador novoAdministrador = dao.save(administrador);
-        return novoAdministrador;
+    public ResponseEntity<Administrador> editarAdministrador(@RequestBody Administrador administrador){
+        return ResponseEntity.status(200).body(administradorService.editarAdministrador(administrador));
     }
 
     @DeleteMapping
-    public Optional<Administrador> deletarAdministrador(@PathVariable Integer matricula){
-        Optional<Administrador> administrador = dao.findById(matricula);
-        dao.deleteById(matricula);
-        return administrador;
+    public ResponseEntity<?> deletarAdministrador(@PathVariable Integer matricula){
+        administradorService.deletarAdministrador(matricula);
+        return ResponseEntity.status(204).build();
     }
 }
